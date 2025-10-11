@@ -7,6 +7,7 @@ import org.springframework.web.server.ResponseStatusException;
 import vn.globits.demo.domain.Person;
 import vn.globits.demo.dto.PersonDTO;
 import vn.globits.demo.repository.PersonRepository;
+import vn.globits.demo.repository.UserRepository;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -16,6 +17,9 @@ public class PersonServiceImpl implements PersonService {
 
     @Autowired
     private PersonRepository personRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Override
     public List<PersonDTO> getAllPersons() {
@@ -56,6 +60,12 @@ public class PersonServiceImpl implements PersonService {
     public void deletePerson(Long id) {
         if (!personRepository.existsById(id)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Person not found");
+        }
+        if (userRepository.existsByPersonId(id)) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "Cannot delete person: This person is linked to a user account"
+            );
         }
         personRepository.deleteById(id);
     }

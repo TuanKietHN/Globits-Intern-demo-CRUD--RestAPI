@@ -49,7 +49,7 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
 
         existingUser.setEmail(dto.getEmail());
-        existingUser.setActive(dto.isActive());
+        existingUser.setIsActive(dto.isActive());
 
         if (dto.getPerson() != null) {
             existingUser.setPerson(dto.getPerson().toEntity());

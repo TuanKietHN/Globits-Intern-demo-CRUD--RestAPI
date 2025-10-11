@@ -36,7 +36,7 @@ private boolean isActive;
         }
         user.setEmail(this.email);
         user.setPassword(this.password);
-        user.setActive(this.isActive);
+        user.setIsActive(this.isActive);
 
         if (this.person != null) {
             user.setPerson(this.person.toEntity());
@@ -73,7 +73,7 @@ private boolean isActive;
         return isActive;
     }
 
-    public void setActive(boolean active) {
+    public void setIsActive(boolean active) {
         isActive = active;
     }
 

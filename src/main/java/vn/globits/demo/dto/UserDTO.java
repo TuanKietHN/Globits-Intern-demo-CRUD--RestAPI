@@ -1,22 +1,20 @@
 package vn.globits.demo.dto;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
-import vn.globits.demo.dto.PersonDTO;
 import vn.globits.demo.domain.User;
+import vn.globits.demo.domain.Role;
 
-public class UserDTO{
+import java.util.Set;
+import java.util.stream.Collectors;
+
+public class UserDTO {
     private Long id;
-
     private String email;
-
     private String password;
-
     private boolean isActive;
     private PersonDTO person;
 
+    // ✅ thêm mới
+    private Set<RoleDTO> roles;
 
     public UserDTO() {}
 
@@ -26,11 +24,26 @@ public class UserDTO{
             this.email = entity.getEmail();
             this.password = entity.getPassword();
             this.isActive = entity.isActive();
+
             if (entity.getPerson() != null) {
                 this.person = new PersonDTO(entity.getPerson());
             }
+
+            // ✅ ánh xạ Role entity sang RoleDTO
+            if (entity.getRoles() != null) {
+                this.roles = entity.getRoles().stream()
+                        .map(role -> {
+                            RoleDTO dto = new RoleDTO();
+                            dto.setId(role.getId());
+                            dto.setRole(role.getRole());
+                            dto.setDescription(role.getDescription());
+                            return dto;
+                        })
+                        .collect(Collectors.toSet());
+            }
         }
     }
+
     public User toEntity() {
         User user = new User();
         if (this.id != null) {
@@ -44,9 +57,12 @@ public class UserDTO{
             user.setPerson(this.person.toEntity());
         }
 
+        // ⚠️ phần roles chỉ nên set nếu cần lưu (create/update)
+        // nếu bạn chưa có logic đó trong service, có thể bỏ qua
         return user;
     }
 
+    // --- Getter & Setter ---
     public Long getId() {
         return id;
     }
@@ -87,4 +103,11 @@ public class UserDTO{
         this.person = person;
     }
 
+    public Set<RoleDTO> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Set<RoleDTO> roles) {
+        this.roles = roles;
+    }
 }

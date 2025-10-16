@@ -1,5 +1,6 @@
 package vn.globits.demo.service;
 
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -12,6 +13,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 public class UserServiceImpl implements UserService {
 
     @Autowired
@@ -28,7 +30,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDTO getUserById(Long id) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+                .orElseThrow(() ->
+                        new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
         return new UserDTO(user);
     }
 
@@ -38,15 +41,17 @@ public class UserServiceImpl implements UserService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email already exists");
         }
 
-        User user = dto.toEntity(); // <-- dùng hàm trong UserDTO để convert DTO -> Entity
-        user.setPassword("123456"); // có thể gán mặc định
-        return new UserDTO(userRepository.save(user));
+        User user = dto.toEntity();
+        user.setPassword("123456"); // có thể mã hóa sau
+        user = userRepository.save(user);
+        return new UserDTO(user);
     }
 
     @Override
     public UserDTO updateUser(Long id, UserDTO dto) {
         User existingUser = userRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+                .orElseThrow(() ->
+                        new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
 
         existingUser.setEmail(dto.getEmail());
         existingUser.setIsActive(dto.isActive());
@@ -55,7 +60,8 @@ public class UserServiceImpl implements UserService {
             existingUser.setPerson(dto.getPerson().toEntity());
         }
 
-        return new UserDTO(userRepository.save(existingUser));
+        userRepository.save(existingUser);
+        return new UserDTO(existingUser);
     }
 
     @Override

@@ -19,6 +19,20 @@ public class Person {
     private String phoneNumber;
     @Column(name = "address", nullable = false)
     private String address;
+
+    @ManyToOne
+    @JoinColumn(name = "company_id")
+    //@JoinColumn(name = "company_id", referencedColumnName = "id")
+    private Company company;
+
+    public Company getCompany() {
+        return company;
+    }
+
+    public void setCompany(Company company) {
+        this.company = company;
+    }
+
     public Long getId() {
         return id;
     }

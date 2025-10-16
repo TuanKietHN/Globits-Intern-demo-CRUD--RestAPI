@@ -2,6 +2,10 @@ package vn.globits.demo.domain;
 
 import jakarta.persistence.*;
 import vn.globits.demo.domain.Person;
+
+import java.util.HashSet;
+import java.util.Set;
+
 @Entity
 @Table(name = "user")
 public class User
@@ -23,6 +27,23 @@ public class User
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "person_id", referencedColumnName = "id")
     private Person person;
+
+    @ManyToMany
+    @JoinTable(
+            name = "user_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    //user_roles là bảng trung gian
+    private Set<Role> roles = new HashSet<>();
+
+    public Set<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
+    }
     // Getter - Setter
     public Long getId() {
         return id;

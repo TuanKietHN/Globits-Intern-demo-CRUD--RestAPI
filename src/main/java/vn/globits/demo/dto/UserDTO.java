@@ -8,14 +8,16 @@ import vn.globits.demo.dto.PersonDTO;
 import vn.globits.demo.domain.User;
 
 public class UserDTO{
-private Long id;
+    private Long id;
 
-private String email;
+    private String email;
 
-private String password;
+    private String password;
 
-private boolean isActive;
+    private boolean isActive;
     private PersonDTO person;
+
+
     public UserDTO() {}
 
     public UserDTO(User entity) {

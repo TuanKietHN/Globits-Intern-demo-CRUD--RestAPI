@@ -3,7 +3,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import vn.globits.demo.dto.RoleDTO;
-import vn.globits.demo.service.RoleServiceImpl;
+import vn.globits.demo.service.impl.RoleServiceImpl;
 
 import java.util.List;
 

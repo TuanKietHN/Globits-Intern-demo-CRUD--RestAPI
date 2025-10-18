@@ -1,4 +1,4 @@
-package vn.globits.demo.service;
+package vn.globits.demo.service.impl;
 
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +8,7 @@ import org.springframework.web.server.ResponseStatusException;
 import vn.globits.demo.domain.User;
 import vn.globits.demo.dto.UserDTO;
 import vn.globits.demo.repository.UserRepository;
+import vn.globits.demo.service.UserService;
 
 import java.util.List;
 import java.util.stream.Collectors;

@@ -1,4 +1,4 @@
-package vn.globits.demo.service;
+package vn.globits.demo.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -8,6 +8,7 @@ import vn.globits.demo.domain.Person;
 import vn.globits.demo.dto.PersonDTO;
 import vn.globits.demo.repository.PersonRepository;
 import vn.globits.demo.repository.UserRepository;
+import vn.globits.demo.service.PersonService;
 
 import java.util.List;
 import java.util.stream.Collectors;

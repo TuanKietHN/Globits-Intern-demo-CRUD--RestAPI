@@ -11,7 +11,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/countries")
-public class CountryController {
+public class RestCountry {
 
     @Autowired
     private CountryService countryService;

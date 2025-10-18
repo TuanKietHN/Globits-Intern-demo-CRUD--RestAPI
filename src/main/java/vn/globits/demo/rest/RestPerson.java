@@ -5,7 +5,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import vn.globits.demo.dto.PersonDTO;
-import vn.globits.demo.repository.CompanyRepository;
 import vn.globits.demo.service.CompanyService;
 import vn.globits.demo.service.PersonService;
 
@@ -13,7 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/persons")
-public class PersonController {
+public class RestPerson {
 
     @Autowired
     private PersonService personService;

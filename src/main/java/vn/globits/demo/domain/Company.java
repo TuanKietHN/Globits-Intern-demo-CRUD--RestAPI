@@ -20,7 +20,7 @@ public class Company {
     @Column(nullable = false)
     private String address;
 
-    @OneToMany(mappedBy = "company", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "company", cascade = CascadeType.ALL, orphanRemoval = true,fetch = FetchType.LAZY)
     private List<Person> people = new ArrayList<>();
 
     public Long getId() {

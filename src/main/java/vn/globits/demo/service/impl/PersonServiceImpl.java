@@ -31,6 +31,11 @@ public class PersonServiceImpl implements PersonService {
     }
 
     @Override
+    public org.springframework.data.domain.Page<PersonDTO> getPersonPage(org.springframework.data.domain.Pageable pageable) {
+        return personRepository.findAll(pageable).map(PersonDTO::new);
+    }
+
+    @Override
     public PersonDTO getPersonById(Long id) {
         Person p = personRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Person not found"));
@@ -62,7 +67,7 @@ public class PersonServiceImpl implements PersonService {
         if (!personRepository.existsById(id)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Person not found");
         }
-        if (userRepository.existsByPersonId(id)) {
+        if (userRepository.existsByPerson_Id(id)) {
             throw new ResponseStatusException(
                     HttpStatus.CONFLICT,
                     "Cannot delete person: This person is linked to a user account"

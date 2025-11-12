@@ -18,6 +18,12 @@ public class RestCompany {
         return ResponseEntity.ok(companyService.findAll());
     }
 
+    @GetMapping("/page")
+    public ResponseEntity<org.springframework.data.domain.Page<CompanyDTO>> getCompanyPage(@RequestParam(defaultValue = "0") int page,
+                                                                                           @RequestParam(defaultValue = "10") int size) {
+        return ResponseEntity.ok(companyService.getPage(org.springframework.data.domain.PageRequest.of(page, size)));
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<CompanyDTO> getCompany(@PathVariable Long id) {
         CompanyDTO company = companyService.findCompanyById(id);

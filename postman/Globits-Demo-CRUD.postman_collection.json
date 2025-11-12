@@ -1,0 +1,279 @@
+{
+  "info": {
+    "name": "Globits Demo CRUD API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080" },
+    { "key": "roleId", "value": "" },
+    { "key": "roleId2", "value": "" },
+    { "key": "companyId", "value": "" },
+    { "key": "departmentId", "value": "" },
+    { "key": "childDepartmentId", "value": "" },
+    { "key": "personId", "value": "" },
+    { "key": "personId2", "value": "" },
+    { "key": "projectId", "value": "" },
+    { "key": "taskId", "value": "" },
+    { "key": "userId", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Roles",
+      "item": [
+        {
+          "name": "Create Role",
+          "event": [
+            {"listen": "prerequest", "script": {"exec": [
+              "pm.variables.set('rand', Date.now());",
+              "pm.variables.set('roleName', 'ROLE_' + pm.variables.get('rand'));",
+              "pm.variables.set('roleDesc', 'Mô tả ' + pm.variables.get('rand'));"
+            ]}},
+            {"listen": "test", "script": {"exec": [
+              "pm.test('Create Role 200', function(){ pm.response.to.have.status(200); });",
+              "var json=pm.response.json(); pm.variables.set('roleId', json.id);"
+            ]}}
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "url": "{{baseUrl}}/api/roles",
+            "body": {"mode": "raw", "raw": "{\n  \"role\": \"{{roleName}}\",\n  \"description\": \"{{roleDesc}}\"\n}"}
+          }
+        },
+        {
+          "name": "Create Role 2",
+          "event": [
+            {"listen": "prerequest", "script": {"exec": [
+              "pm.variables.set('rand2', Date.now()+1);",
+              "pm.variables.set('roleName2', 'ROLE_' + pm.variables.get('rand2'));",
+              "pm.variables.set('roleDesc2', 'Mô tả ' + pm.variables.get('rand2'));"
+            ]}},
+            {"listen": "test", "script": {"exec": [
+              "pm.test('Create Role 2 200', function(){ pm.response.to.have.status(200); });",
+              "var json=pm.response.json(); pm.variables.set('roleId2', json.id);"
+            ]}}
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "url": "{{baseUrl}}/api/roles",
+            "body": {"mode": "raw", "raw": "{\n  \"role\": \"{{roleName2}}\",\n  \"description\": \"{{roleDesc2}}\"\n}"}
+          }
+        },
+        {
+          "name": "Get All Roles",
+          "event": [{"listen": "test", "script": {"exec": [
+            "pm.test('Get roles 200', function(){ pm.response.to.have.status(200); });",
+            "pm.test('Roles array', function(){ var j=pm.response.json(); pm.expect(Array.isArray(j)).to.be.true; });"
+          ]}}],
+          "request": {"method": "GET", "url": "{{baseUrl}}/api/roles"}
+        },
+        {
+          "name": "Get Role By Id",
+          "event": [{"listen": "test", "script": {"exec": [
+            "pm.test('Get role by id 200', function(){ pm.response.to.have.status(200); });"
+          ]}}],
+          "request": {"method": "GET", "url": "{{baseUrl}}/api/roles/{{roleId}}"}
+        },
+        {
+          "name": "Update Role",
+          "event": [{"listen": "test", "script": {"exec": [
+            "pm.test('Update role 200', function(){ pm.response.to.have.status(200); });"
+          ]}}],
+          "request": {
+            "method": "PUT",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "url": "{{baseUrl}}/api/roles/{{roleId}}",
+            "body": {"mode": "raw", "raw": "{\n  \"role\": \"{{roleName}}\",\n  \"description\": \"Updated desc\"\n}"}
+          }
+        },
+        {
+          "name": "Delete Role",
+          "event": [{"listen": "test", "script": {"exec": [
+            "pm.test('Delete role 204', function(){ pm.response.to.have.status(204); });"
+          ]}}],
+          "request": {"method": "DELETE", "url": "{{baseUrl}}/api/roles/{{roleId}}"}
+        }
+      ]
+    },
+    {
+      "name": "Company",
+      "item": [
+        {
+          "name": "Create Company",
+          "event": [
+            {"listen": "prerequest", "script": {"exec": [
+              "pm.variables.set('randc', Date.now());",
+              "pm.variables.set('companyCode', 'COMP' + pm.variables.get('randc'));",
+              "pm.variables.set('companyName', 'Company ' + pm.variables.get('randc'));"
+            ]}},
+            {"listen": "test", "script": {"exec": [
+              "pm.test('Create company 200', function(){ pm.response.to.have.status(200); });",
+              "var j=pm.response.json(); pm.variables.set('companyId', j.id);"
+            ]}}
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "url": "{{baseUrl}}/api/companies",
+            "body": {"mode": "raw", "raw": "{\n  \"name\": \"{{companyName}}\",\n  \"code\": \"{{companyCode}}\",\n  \"address\": \"HN\"\n}"}
+          }
+        },
+        {"name": "Get Company Page", "event": [{"listen": "test", "script": {"exec": [
+          "pm.test('Company page 200', function(){ pm.response.to.have.status(200); });"
+        ]}}], "request": {"method": "GET", "url": "{{baseUrl}}/api/companies/page?page=0&size=10"}},
+        {"name": "Get Company By Id", "event": [{"listen": "test", "script": {"exec": [
+          "pm.test('Company by id 200', function(){ pm.response.to.have.status(200); });"
+        ]}}], "request": {"method": "GET", "url": "{{baseUrl}}/api/companies/{{companyId}}"}},
+        {"name": "Update Company", "event": [{"listen": "test", "script": {"exec": [
+          "pm.test('Update company 200', function(){ pm.response.to.have.status(200); });"
+        ]}}], "request": {"method": "PUT", "header": [{"key": "Content-Type", "value": "application/json"}], "url": "{{baseUrl}}/api/companies/{{companyId}}", "body": {"mode": "raw", "raw": "{\n  \"name\": \"{{companyName}} Updated\",\n  \"code\": \"{{companyCode}}\",\n  \"address\": \"HCM\"\n}"}}},
+        {"name": "Delete Company", "event": [{"listen": "test", "script": {"exec": [
+          "pm.test('Delete company 204', function(){ pm.response.to.have.status(204); });"
+        ]}}], "request": {"method": "DELETE", "url": "{{baseUrl}}/api/companies/{{companyId}}"}}
+      ]
+    },
+    {
+      "name": "Department",
+      "item": [
+        {
+          "name": "Create Department",
+          "event": [{"listen": "test", "script": {"exec": [
+            "pm.test('Create dept 200', function(){ pm.response.to.have.status(200); });",
+            "var j=pm.response.json(); pm.variables.set('departmentId', j.id);"
+          ]}}],
+          "request": {"method": "POST", "header": [{"key": "Content-Type", "value": "application/json"}], "url": "{{baseUrl}}/api/departments", "body": {"mode": "raw", "raw": "{\n  \"code\": \"{{companyCode}}-IT\",\n  \"name\": \"CNTT\",\n  \"companyId\": {{companyId}}\n}"}}
+        },
+        {
+          "name": "Create Child Department",
+          "event": [{"listen": "test", "script": {"exec": [
+            "pm.test('Create child dept 200', function(){ pm.response.to.have.status(200); });",
+            "var j=pm.response.json(); pm.variables.set('childDepartmentId', j.id);"
+          ]}}],
+          "request": {"method": "POST", "header": [{"key": "Content-Type", "value": "application/json"}], "url": "{{baseUrl}}/api/departments", "body": {"mode": "raw", "raw": "{\n  \"code\": \"{{companyCode}}-IT-DEV\",\n  \"name\": \"Phát triển\",\n  \"companyId\": {{companyId}},\n  \"parentId\": {{departmentId}}\n}"}}
+        },
+        {"name": "Get Departments By Company", "event": [{"listen": "test", "script": {"exec": [
+          "pm.test('Dept by company 200', function(){ pm.response.to.have.status(200); });"
+        ]}}], "request": {"method": "GET", "url": "{{baseUrl}}/api/departments/by-company/{{companyId}}"}},
+        {"name": "Update Department", "event": [{"listen": "test", "script": {"exec": [
+          "pm.test('Update dept 200', function(){ pm.response.to.have.status(200); });"
+        ]}}], "request": {"method": "PUT", "header": [{"key": "Content-Type", "value": "application/json"}], "url": "{{baseUrl}}/api/departments/{{departmentId}}", "body": {"mode": "raw", "raw": "{\n  \"code\": \"{{companyCode}}-IT\",\n  \"name\": \"CNTT Updated\",\n  \"companyId\": {{companyId}}\n}"}}},
+        {"name": "Delete Department", "event": [{"listen": "test", "script": {"exec": [
+          "pm.test('Delete dept 204', function(){ pm.response.to.have.status(204); });"
+        ]}}], "request": {"method": "DELETE", "url": "{{baseUrl}}/api/departments/{{childDepartmentId}}"}}
+      ]
+    },
+    {
+      "name": "Person",
+      "item": [
+        {
+          "name": "Create Person",
+          "event": [{"listen": "test", "script": {"exec": [
+            "pm.test('Create person 201', function(){ pm.response.to.have.status(201); });",
+            "var j=pm.response.json(); pm.variables.set('personId', j.id);"
+          ]}}],
+          "request": {"method": "POST", "header": [{"key": "Content-Type", "value": "application/json"}], "url": "{{baseUrl}}/api/persons", "body": {"mode": "raw", "raw": "{\n  \"fullName\": \"Ng Van A\",\n  \"gender\": \"M\",\n  \"birthDate\": \"1990-01-01\",\n  \"phoneNumber\": \"0909\",\n  \"address\": \"HN\",\n  \"companyId\": {{companyId}}\n}"}}
+        },
+        {
+          "name": "Create Person 2",
+          "event": [{"listen": "test", "script": {"exec": [
+            "pm.test('Create person2 201', function(){ pm.response.to.have.status(201); });",
+            "var j=pm.response.json(); pm.variables.set('personId2', j.id);"
+          ]}}],
+          "request": {"method": "POST", "header": [{"key": "Content-Type", "value": "application/json"}], "url": "{{baseUrl}}/api/persons", "body": {"mode": "raw", "raw": "{\n  \"fullName\": \"Ng Van B\",\n  \"gender\": \"F\",\n  \"birthDate\": \"1992-02-02\",\n  \"phoneNumber\": \"0908\",\n  \"address\": \"HCM\",\n  \"companyId\": {{companyId}}\n}"}}
+        },
+        {"name": "Get Person Page", "event": [{"listen": "test", "script": {"exec": [
+          "pm.test('Person page 200', function(){ pm.response.to.have.status(200); });"
+        ]}}], "request": {"method": "GET", "url": "{{baseUrl}}/api/persons/page?page=0&size=10"}},
+        {"name": "Get Person By Id", "event": [{"listen": "test", "script": {"exec": [
+          "pm.test('Person by id 200', function(){ pm.response.to.have.status(200); });"
+        ]}}], "request": {"method": "GET", "url": "{{baseUrl}}/api/persons/{{personId}}"}},
+        {"name": "Update Person", "event": [{"listen": "test", "script": {"exec": [
+          "pm.test('Update person 200', function(){ pm.response.to.have.status(200); });"
+        ]}}], "request": {"method": "PUT", "header": [{"key": "Content-Type", "value": "application/json"}], "url": "{{baseUrl}}/api/persons/{{personId}}", "body": {"mode": "raw", "raw": "{\n  \"fullName\": \"Ng Van A Updated\",\n  \"gender\": \"M\",\n  \"birthDate\": \"1990-01-01\",\n  \"phoneNumber\": \"0909\",\n  \"address\": \"HN\"\n}"}}},
+        {"name": "Upload Avatar", "event": [{"listen": "test", "script": {"exec": [
+          "pm.test('Upload avatar 200', function(){ pm.response.to.have.status(200); });"
+        ]}}], "request": {"method": "POST", "url": "{{baseUrl}}/api/persons/{{personId}}/avatar", "body": {"mode": "formdata", "formdata": [{"key": "file", "type": "file", "src": "avatar.jpg"}]}}},
+        {"name": "Delete Person", "event": [{"listen": "test", "script": {"exec": [
+          "pm.test('Delete person 204', function(){ pm.response.to.have.status(204); });"
+        ]}}], "request": {"method": "DELETE", "url": "{{baseUrl}}/api/persons/{{personId2}}"}}
+      ]
+    },
+    {
+      "name": "Project",
+      "item": [
+        {
+          "name": "Create Project",
+          "event": [{"listen": "test", "script": {"exec": [
+            "pm.test('Create project 200', function(){ pm.response.to.have.status(200); });",
+            "var j=pm.response.json(); pm.variables.set('projectId', j.id);"
+          ]}}],
+          "request": {"method": "POST", "header": [{"key": "Content-Type", "value": "application/json"}], "url": "{{baseUrl}}/api/projects", "body": {"mode": "raw", "raw": "{\n  \"code\": \"{{companyCode}}-PRJ1\",\n  \"name\": \"Dự án 1\",\n  \"description\": \"Mô tả dự án\",\n  \"companyId\": {{companyId}},\n  \"personIds\": [{{personId}}, {{personId2}}]\n}"}}
+        },
+        {"name": "Get Projects Page", "event": [{"listen": "test", "script": {"exec": [
+          "pm.test('Project page 200', function(){ pm.response.to.have.status(200); });"
+        ]}}], "request": {"method": "GET", "url": "{{baseUrl}}/api/projects?page=0&size=10"}},
+        {"name": "Get Project By Id", "event": [{"listen": "test", "script": {"exec": [
+          "pm.test('Project by id 200', function(){ pm.response.to.have.status(200); });"
+        ]}}], "request": {"method": "GET", "url": "{{baseUrl}}/api/projects/{{projectId}}"}},
+        {"name": "Update Project", "event": [{"listen": "test", "script": {"exec": [
+          "pm.test('Update project 200', function(){ pm.response.to.have.status(200); });"
+        ]}}], "request": {"method": "PUT", "header": [{"key": "Content-Type", "value": "application/json"}], "url": "{{baseUrl}}/api/projects/{{projectId}}", "body": {"mode": "raw", "raw": "{\n  \"code\": \"{{companyCode}}-PRJ1\",\n  \"name\": \"Dự án 1 Updated\",\n  \"description\": \"Mô tả updated\"\n}"}}},
+        {"name": "Delete Project", "event": [{"listen": "test", "script": {"exec": [
+          "pm.test('Delete project 204', function(){ pm.response.to.have.status(204); });"
+        ]}}], "request": {"method": "DELETE", "url": "{{baseUrl}}/api/projects/{{projectId}}"}}
+      ]
+    },
+    {
+      "name": "Task",
+      "item": [
+        {
+          "name": "Create Task",
+          "event": [{"listen": "test", "script": {"exec": [
+            "pm.test('Create task 200', function(){ pm.response.to.have.status(200); });",
+            "var j=pm.response.json(); pm.variables.set('taskId', j.id);"
+          ]}}],
+          "request": {"method": "POST", "header": [{"key": "Content-Type", "value": "application/json"}], "url": "{{baseUrl}}/api/tasks", "body": {"mode": "raw", "raw": "{\n  \"name\": \"Task 1\",\n  \"description\": \"Mô tả\",\n  \"startTime\": \"2025-11-13T09:00:00Z\",\n  \"endTime\": \"2025-11-14T17:00:00Z\",\n  \"priority\": 1,\n  \"status\": 1,\n  \"projectId\": {{projectId}},\n  \"personId\": {{personId}}\n}"}}
+        },
+        {"name": "Search Tasks", "event": [{"listen": "test", "script": {"exec": [
+          "pm.test('Search tasks 200', function(){ pm.response.to.have.status(200); });"
+        ]}}], "request": {"method": "GET", "url": "{{baseUrl}}/api/tasks?companyId={{companyId}}&projectId={{projectId}}&personId={{personId}}&status=1&priority=1&name=Task&page=0&size=10"}},
+        {"name": "Get Task By Id", "event": [{"listen": "test", "script": {"exec": [
+          "pm.test('Task by id 200', function(){ pm.response.to.have.status(200); });"
+        ]}}], "request": {"method": "GET", "url": "{{baseUrl}}/api/tasks/{{taskId}}"}},
+        {"name": "Update Task", "event": [{"listen": "test", "script": {"exec": [
+          "pm.test('Update task 200', function(){ pm.response.to.have.status(200); });"
+        ]}}], "request": {"method": "PUT", "header": [{"key": "Content-Type", "value": "application/json"}], "url": "{{baseUrl}}/api/tasks/{{taskId}}", "body": {"mode": "raw", "raw": "{\n  \"name\": \"Task 1 Updated\",\n  \"description\": \"Mô tả updated\",\n  \"priority\": 2,\n  \"status\": 2\n}"}}},
+        {"name": "Export Tasks Excel", "event": [{"listen": "test", "script": {"exec": [
+          "pm.test('Export 200', function(){ pm.response.to.have.status(200); });",
+          "pm.test('Octet-stream', function(){ pm.expect(pm.response.headers.get('Content-Type')).to.include('application/octet-stream'); });"
+        ]}}], "request": {"method": "GET", "url": "{{baseUrl}}/api/tasks/export?companyId={{companyId}}"}},
+        {"name": "Delete Task", "event": [{"listen": "test", "script": {"exec": [
+          "pm.test('Delete task 204', function(){ pm.response.to.have.status(204); });"
+        ]}}], "request": {"method": "DELETE", "url": "{{baseUrl}}/api/tasks/{{taskId}}"}}
+      ]
+    },
+    {
+      "name": "User",
+      "item": [
+        {
+          "name": "Create User",
+          "event": [{"listen": "test", "script": {"exec": [
+            "pm.test('Create user 201', function(){ pm.response.to.have.status(201); });",
+            "var j=pm.response.json(); pm.variables.set('userId', j.id);"
+          ]}}],
+          "request": {"method": "POST", "header": [{"key": "Content-Type", "value": "application/json"}], "url": "{{baseUrl}}/api/users", "body": {"mode": "raw", "raw": "{\n  \"email\": \"user_{{rand}}@example.com\",\n  \"password\": \"123456\",\n  \"isActive\": true,\n  \"roleIds\": [{{roleId}}]\n}"}}
+        },
+        {"name": "Get User By Id", "event": [{"listen": "test", "script": {"exec": [
+          "pm.test('User by id 200', function(){ pm.response.to.have.status(200); });"
+        ]}}], "request": {"method": "GET", "url": "{{baseUrl}}/api/users/{{userId}}"}},
+        {"name": "Update User Roles", "event": [{"listen": "test", "script": {"exec": [
+          "pm.test('Update user 200', function(){ pm.response.to.have.status(200); });"
+        ]}}], "request": {"method": "PUT", "header": [{"key": "Content-Type", "value": "application/json"}], "url": "{{baseUrl}}/api/users/{{userId}}", "body": {"mode": "raw", "raw": "{\n  \"roleIds\": [{{roleId2}}]\n}"}}},
+        {"name": "Delete User", "event": [{"listen": "test", "script": {"exec": [
+          "pm.test('Delete user 204', function(){ pm.response.to.have.status(204); });"
+        ]}}], "request": {"method": "DELETE", "url": "{{baseUrl}}/api/users/{{userId}}"}}
+      ]
+    }
+  ]
+}

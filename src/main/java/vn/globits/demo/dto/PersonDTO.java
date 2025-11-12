@@ -11,6 +11,7 @@ public class PersonDTO {
     private LocalDate birthDate;
     private String phoneNumber;
     private String address;
+    private String avatar;
 
     public PersonDTO() {}
 
@@ -22,6 +23,7 @@ public class PersonDTO {
             this.birthDate = entity.getBirthDate();
             this.phoneNumber = entity.getPhoneNumber();
             this.address = entity.getAddress();
+            this.avatar = entity.getAvatar();
         }
     }
     public Person toEntity() {
@@ -34,6 +36,7 @@ public class PersonDTO {
         p.setBirthDate(this.birthDate);
         p.setPhoneNumber(this.phoneNumber);
         p.setAddress(this.address);
+        p.setAvatar(this.avatar);
         return p;
     }
     public Long getId() {
@@ -83,4 +86,6 @@ public class PersonDTO {
     public void setAddress(String address) {
         this.address = address;
     }
+    public String getAvatar() { return avatar; }
+    public void setAvatar(String avatar) { this.avatar = avatar; }
 }

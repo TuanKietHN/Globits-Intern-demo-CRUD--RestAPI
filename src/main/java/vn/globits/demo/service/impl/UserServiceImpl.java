@@ -5,12 +5,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+import vn.globits.demo.domain.Role;
 import vn.globits.demo.domain.User;
+import vn.globits.demo.dto.RoleDTO;
 import vn.globits.demo.dto.UserDTO;
+import vn.globits.demo.repository.RoleRepository;
 import vn.globits.demo.repository.UserRepository;
 import vn.globits.demo.service.UserService;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -20,10 +25,12 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private RoleRepository roleRepository;
+
     @Override
     public List<UserDTO> getAllUsers() {
-        return userRepository.findAll()
-                .stream()
+        return userRepository.findAll().stream()
                 .map(UserDTO::new)
                 .collect(Collectors.toList());
     }
@@ -31,45 +38,57 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDTO getUserById(Long id) {
         User user = userRepository.findById(id)
-                .orElseThrow(() ->
-                        new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
         return new UserDTO(user);
     }
 
     @Override
     public UserDTO createUser(UserDTO dto) {
-        if (userRepository.existsByEmail(dto.getEmail())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email already exists");
+        if (dto == null || dto.getEmail() == null || dto.getEmail().trim().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email is required");
         }
-
-        User user = dto.toEntity();
-        user.setPassword("123456"); // có thể mã hóa sau
-        user = userRepository.save(user);
-        return new UserDTO(user);
+        if (userRepository.existsByEmail(dto.getEmail().trim())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Email already exists");
+        }
+        User entity = new User();
+        entity.setEmail(dto.getEmail().trim());
+        entity.setPassword(dto.getPassword());
+        entity.setIsActive(dto.isActive());
+        if (dto.getRoleIds() != null && !dto.getRoleIds().isEmpty()) {
+            Set<Role> roles = new HashSet<>(roleRepository.findAllById(dto.getRoleIds()));
+            entity.setRoles(roles);
+        }
+        User saved = userRepository.save(entity);
+        return new UserDTO(saved);
     }
 
     @Override
     public UserDTO updateUser(Long id, UserDTO dto) {
-        User existingUser = userRepository.findById(id)
-                .orElseThrow(() ->
-                        new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
-
-        existingUser.setEmail(dto.getEmail());
-        existingUser.setIsActive(dto.isActive());
-
-        if (dto.getPerson() != null) {
-            existingUser.setPerson(dto.getPerson().toEntity());
+        User existing = userRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+        if (dto.getEmail() != null && !dto.getEmail().trim().isEmpty()) {
+            if (userRepository.existsByEmail(dto.getEmail().trim()) && !existing.getEmail().equals(dto.getEmail().trim())) {
+                throw new ResponseStatusException(HttpStatus.CONFLICT, "Email already exists");
+            }
+            existing.setEmail(dto.getEmail().trim());
         }
-
-        userRepository.save(existingUser);
-        return new UserDTO(existingUser);
+        if (dto.getPassword() != null) {
+            existing.setPassword(dto.getPassword());
+        }
+        existing.setIsActive(dto.isActive());
+        if (dto.getRoleIds() != null) {
+            Set<Role> roles = new HashSet<>(roleRepository.findAllById(dto.getRoleIds()));
+            existing.clearRoles();
+            existing.setRoles(roles);
+        }
+        User saved = userRepository.save(existing);
+        return new UserDTO(saved);
     }
 
     @Override
     public void deleteUser(Long id) {
-        if (!userRepository.existsById(id)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
-        }
-        userRepository.deleteById(id);
+        User existing = userRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+        userRepository.delete(existing);
     }
 }

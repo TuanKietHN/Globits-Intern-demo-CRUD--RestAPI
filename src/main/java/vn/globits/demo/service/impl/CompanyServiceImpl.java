@@ -21,6 +21,10 @@ public class CompanyServiceImpl implements CompanyService{
         return companyRepository.findAll().stream().map(this::toDTO).collect(Collectors.toList());
     }
 
+    public org.springframework.data.domain.Page<CompanyDTO> getPage(org.springframework.data.domain.Pageable pageable) {
+        return companyRepository.findAll(pageable).map(this::toDTO);
+    }
+
 
     public CompanyDTO findCompanyById(Long id) {
         return companyRepository.findById(id).map(this::toDTO).orElse(null);

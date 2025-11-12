@@ -1,6 +1,9 @@
 package vn.globits.demo.domain;
 import jakarta.persistence.*;
+
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 @Entity
 @Table(name = "roles")
@@ -15,7 +18,8 @@ public class Role {
 
     @Column(name="description",nullable = false)
     private String description;
-
+    @OneToMany(mappedBy = "role", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<UserRole> userRoles = new ArrayList<>();
     public Long getId() {
         return id;
     }
@@ -39,18 +43,6 @@ public class Role {
     public void setDescription(String description) {
         this.description = description;
     }
-
-    public Set<User> getUsers() {
-        return users;
-    }
-
-    public void setUsers(Set<User> users) {
-        this.users = users;
-    }
-
-    @ManyToMany(mappedBy = "roles")
-    private Set<User> users = new HashSet<>();
-
 
     public Role() {}
 }

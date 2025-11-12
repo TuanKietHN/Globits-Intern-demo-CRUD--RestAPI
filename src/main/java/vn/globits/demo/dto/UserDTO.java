@@ -3,6 +3,7 @@ package vn.globits.demo.dto;
 import vn.globits.demo.domain.User;
 import vn.globits.demo.domain.Role;
 
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -12,57 +13,27 @@ public class UserDTO {
     private String password;
     private boolean isActive;
     private PersonDTO person;
+    private List<RoleDTO> roles; // Danh sách roles của user
+    private List<Long> roleIds;  // Danh sách roleIds để assign/update
 
-    // ✅ thêm mới
-    private Set<RoleDTO> roles;
-
+    // Constructor mặc định
     public UserDTO() {}
 
-    public UserDTO(User entity) {
-        if (entity != null) {
-            this.id = entity.getId();
-            this.email = entity.getEmail();
-            this.password = entity.getPassword();
-            this.isActive = entity.isActive();
-
-            if (entity.getPerson() != null) {
-                this.person = new PersonDTO(entity.getPerson());
+    public UserDTO(vn.globits.demo.domain.User u) {
+        if (u != null) {
+            this.id = u.getId();
+            this.email = u.getEmail();
+            this.isActive = u.isActive();
+            if (u.getPerson() != null) {
+                this.person = new PersonDTO(u.getPerson());
             }
-
-            // ✅ ánh xạ Role entity sang RoleDTO
-            if (entity.getRoles() != null) {
-                this.roles = entity.getRoles().stream()
-                        .map(role -> {
-                            RoleDTO dto = new RoleDTO();
-                            dto.setId(role.getId());
-                            dto.setRole(role.getRole());
-                            dto.setDescription(role.getDescription());
-                            return dto;
-                        })
-                        .collect(Collectors.toSet());
+            if (u.getRoles() != null) {
+                this.roles = u.getRoles().stream().map(RoleDTO::new).collect(Collectors.toList());
             }
         }
     }
 
-    public User toEntity() {
-        User user = new User();
-        if (this.id != null) {
-            user.setId(this.id);
-        }
-        user.setEmail(this.email);
-        user.setPassword(this.password);
-        user.setIsActive(this.isActive);
-
-        if (this.person != null) {
-            user.setPerson(this.person.toEntity());
-        }
-
-        // ⚠️ phần roles chỉ nên set nếu cần lưu (create/update)
-        // nếu bạn chưa có logic đó trong service, có thể bỏ qua
-        return user;
-    }
-
-    // --- Getter & Setter ---
+    // Getters and Setters
     public Long getId() {
         return id;
     }
@@ -103,11 +74,19 @@ public class UserDTO {
         this.person = person;
     }
 
-    public Set<RoleDTO> getRoles() {
+    public List<RoleDTO> getRoles() {
         return roles;
     }
 
-    public void setRoles(Set<RoleDTO> roles) {
+    public void setRoles(List<RoleDTO> roles) {
         this.roles = roles;
+    }
+
+    public List<Long> getRoleIds() {
+        return roleIds;
+    }
+
+    public void setRoleIds(List<Long> roleIds) {
+        this.roleIds = roleIds;
     }
 }

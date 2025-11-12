@@ -19,8 +19,10 @@ public class Person {
     private String phoneNumber;
     @Column(name = "address", nullable = false)
     private String address;
+    @Column(name = "avatar")
+    private String avatar;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "company_id")
     //@JoinColumn(name = "company_id", referencedColumnName = "id")
     private Company company;
@@ -82,4 +84,6 @@ public class Person {
     public void setAddress(String address) {
         this.address = address;
     }
+    public String getAvatar() { return avatar; }
+    public void setAvatar(String avatar) { this.avatar = avatar; }
 }

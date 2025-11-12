@@ -8,6 +8,14 @@ public class RoleDTO {
 
     public RoleDTO() {}
 
+    public RoleDTO(vn.globits.demo.domain.Role r) {
+        if (r != null) {
+            this.id = r.getId();
+            this.role = r.getRole();
+            this.description = r.getDescription();
+        }
+    }
+
     public Long getId() {
         return id;
     }

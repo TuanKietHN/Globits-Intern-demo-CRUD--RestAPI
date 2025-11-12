@@ -30,18 +30,30 @@ public class RoleServiceImpl implements RoleService{
 
 
     public RoleDTO createRole(RoleDTO dto) {
+        if (dto == null || dto.getRole() == null || dto.getRole().trim().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Role is required");
+        }
+        if (roleRepository.existsByRole(dto.getRole())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Role already exists");
+        }
         Role r = new Role();
-        r.setRole(dto.getRole()); r.setDescription(dto.getDescription());
+        r.setRole(dto.getRole().trim());
+        r.setDescription(dto.getDescription());
         Role saved = roleRepository.save(r);
         return toDTO(saved);
     }
 
 
     public RoleDTO updateRole(Long id, RoleDTO dto) {
-        Optional<Role> opt = roleRepository.findById(id);
-        if (!opt.isPresent()) return null;
-        Role r = opt.get();
-        r.setRole(dto.getRole()); r.setDescription(dto.getDescription());
+        Role r = roleRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Role not found"));
+        if (dto.getRole() != null && !dto.getRole().trim().isEmpty()) {
+            if (roleRepository.existsByRoleAndIdNot(dto.getRole().trim(), id)) {
+                throw new ResponseStatusException(HttpStatus.CONFLICT, "Role already exists");
+            }
+            r.setRole(dto.getRole().trim());
+        }
+        r.setDescription(dto.getDescription());
         return toDTO(roleRepository.save(r));
     }
 
@@ -49,12 +61,6 @@ public class RoleServiceImpl implements RoleService{
     public void deleteRole(Long id) {
         Role role = roleRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Role not found"));
-
-        // Gỡ liên kết với user trước
-        for (User user : role.getUsers()) {
-            user.getRoles().remove(role);
-        }
-
         roleRepository.delete(role);
     }
 
